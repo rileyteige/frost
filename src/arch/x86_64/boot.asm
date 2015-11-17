@@ -1,4 +1,5 @@
 global start
+extern long_mode_start
 
 section .text
 bits 32
@@ -12,9 +13,20 @@ start:
 	call setup_page_tables
 	call enable_paging
 
-	; print `OK` to screen
-	mov dword [0xb8000], 0x2f4b2f4f
-	hlt
+	; load the 64-bit GDT
+	lgdt [gdt64.pointer]
+
+	; update selectors
+	mov ax, gdt64.data
+	mov ss, ax ; stack selector
+	mov ds, ax ; data selector
+	mov es, ax ; extra selector
+
+	jmp gdt64.code:long_mode_start
+
+	; we should never get here.
+	mov al, "3"
+	jmp error
 
 setup_page_tables:
 	; map first P4 entry to P3 table
@@ -126,3 +138,14 @@ p2_table:
 stack_bottom:
 	resb 64
 stack_top:
+
+section .rodata
+gdt64:
+	dq 0 ; zero entry
+.code: equ $ - gdt64 ; new
+	dq (1<<44) | (1<<47) | (1<<41) | (1<<43) | (1<<53) ; code segment
+.data: equ $ - gdt64 ; new
+	dq (1<<44) | (1<<47) | (1<<41) ; data segment
+.pointer:
+	dw $ - gdt64 - 1
+	dq gdt64
