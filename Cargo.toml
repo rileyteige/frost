@@ -5,3 +5,6 @@ authors = ["Riley Teige <riley.teige@gmail.com>"]
 
 [lib]
 crate-type = ["staticlib"]
+
+[dependencies]
+rlibc = "0.1.4"
