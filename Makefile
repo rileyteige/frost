@@ -1,11 +1,10 @@
 arch ?= x86_64
+target ?= $(arch)-unknown-linux-gnu
 kernel := build/kernel-$(arch).bin
 iso := build/os-$(arch).iso
+
 os_name := frost
-
-target ?= $(arch)-unknown-linux-gnu
 rust_os := target/$(target)/debug/lib$(os_name).a
-
 linker_script := src/arch/$(arch)/linker.ld
 grub_cfg := src/arch/$(arch)/grub.cfg
 assembly_source_files := $(wildcard src/arch/$(arch)/*.asm)
