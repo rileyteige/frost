@@ -5,6 +5,7 @@ section .text
 bits 32
 start:
 	mov esp, stack_top
+	mov edi, ebx ; Move Multiboot info pointer to edi
 
 	call test_multiboot
 	call test_cpuid
@@ -127,18 +128,6 @@ test_long_mode:
     mov al, "2"
     jmp error
 
-section .bss
-align 4096
-p4_table:
-	resb 4096
-p3_table:
-	resb 4096
-p2_table:
-	resb 4096
-stack_bottom:
-	resb 64
-stack_top:
-
 section .rodata
 gdt64:
 	dq 0 ; zero entry
@@ -149,3 +138,15 @@ gdt64:
 .pointer:
 	dw $ - gdt64 - 1
 	dq gdt64
+
+section .bss
+align 4096
+p4_table:
+	resb 4096
+p3_table:
+	resb 4096
+p2_table:
+	resb 4096
+stack_bottom:
+	resb 4096
+stack_top:
